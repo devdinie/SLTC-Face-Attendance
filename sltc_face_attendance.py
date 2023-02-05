@@ -72,70 +72,84 @@ class SimpleFacerec:
         face_locations = face_locations / self.frame_resizing
         return face_locations.astype(int), face_names
 
-# Load Camera
-cap = cv2.VideoCapture(0)
 
-# Encode faces from a folder
-sfr = SimpleFacerec()
-sfr.load_encoding_images("images2/")
-
-#function to write to CSV
-def addData (name):
-    with open('attendence.csv', 'a+', newline='') as f:
-        w = csv.writer(f)
-        w.writerow([name, datetime.now()])
-    f.close()
-
-# Load Camera
-cap = cv2.VideoCapture(0)
-
-i=0
-while True:
-
-    ret, frame = cap.read()
-
-    # Detect Faces
-    face_locations, face_names = sfr.detect_known_faces(frame)
-    for face_loc, name in zip(face_locations, face_names):
-        y1, x2, y2, x1 = face_loc[0], face_loc[1], face_loc[2], face_loc[3]
-
-        # check name != Unknown
-        if name == "Unknown":
-            #Printing the name and date in console
-            print("Please try again")
-            #playsound('music/error.mp3') 
-
-            #draw rectange with name
-            cv2.putText(frame, "Please try again",(x1, y1 - 10), cv2.FONT_HERSHEY_DUPLEX, 1, (0,0,255), 2)
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0,0,255), 4)
-        else:
-            #Printing the name and date in console
-            print(name, datetime.now())
-
-            # Add data to CSV
-            addData(name)
-            #playsound('music/success.mp3')
-        
-            #draw rectange with name
-            cv2.putText(frame, name+str(datetime.now()),(x1, y1 - 10), cv2.FONT_HERSHEY_DUPLEX, 1, (0,255,0), 2)
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0,255,0), 4)
-
-
-        
-        #save image of detected face
-        # cv2.imwrite('/home/img'+str(i)+'.jpg',frame)
-        # i+=1
-
-    #freeze for some time
-    #time.sleep(1)
-
-    cv2.imshow("Background", frame)
-    key = cv2.waitKey(1)
-    if key == 27:
-        break
+def main():
     
-cap.release()
-cv2.destroyAllWindows()
+    # Load from camera & encode faces from directory
+    cap = cv2.VideoCapture(0)
+    sfr = SimpleFacerec()
+    sfr.load_encoding_images("images2/")
+    
+    #function to write to CSV
+    
+    def addData (name):
+        with open('attendence.csv', 'a+', newline='') as f:
+            w = csv.writer(f)
+            w.writerow([name, datetime.now()])
+        f.close()
+
+    i=0
+    while True:
+
+        ret, frame = cap.read()
+
+        # Detect Faces
+        face_locations, face_names = sfr.detect_known_faces(frame)
+        
+        for face_loc, name in zip(face_locations, face_names):
+            y1, x2, y2, x1 = face_loc[0], face_loc[1], face_loc[2], face_loc[3]
+
+            if name == "Unknown":
+                
+                #region face detect for unknown input
+                """
+                # Printing the name and date in console
+                # Draw rectangle with error message
+                """
+                print("Please try again")
+                #playsound('music/error.mp3') 
+                
+                cv2.putText(frame, "Please try again",(x1, y1 - 10), cv2.FONT_HERSHEY_DUPLEX, 1, (0,0,255), 2)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0,0,255), 4)
+                
+                #endregion face detect for unknown input
+                
+            else:
+                #region face detect for known input
+                """
+                # Printing the name and date in console
+                # Add data to CSV
+                # Draw rectangle with name
+                """
+                print(name, datetime.now())
+                addData(name)
+                #playsound('music/success.mp3')
+    
+                cv2.putText(frame, name+str(datetime.now()),(x1, y1 - 10), cv2.FONT_HERSHEY_DUPLEX, 1, (0,255,0), 2)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0,255,0), 4)
+                #endregion face detect for known input
+                
+            #save image of detected face
+            # cv2.imwrite('/home/img'+str(i)+'.jpg',frame)
+            # i+=1
+            
+        #region freeze, wait, break
+        
+        #freeze for some time
+        #time.sleep(1)
+        
+        cv2.imshow("Background", frame)
+        key = cv2.waitKey(1)
+        if key == 27:
+            break
+        
+        #endregion freeze, wait, break
+        
+    cap.release()
+    cv2.destroyAllWindows()
+    
+if __name__ == "__main__":
+    main()
 
 
 
