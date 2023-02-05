@@ -83,7 +83,7 @@ def main():
     #function to write to CSV
     
     def addData (name):
-        with open('attendence.csv', 'a+', newline='') as f:
+        with open('attendance.csv', 'a+', newline='') as f:
             w = csv.writer(f)
             w.writerow([name, datetime.now()])
         f.close()
