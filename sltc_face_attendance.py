@@ -1,10 +1,16 @@
-import cv2
-from datetime import datetime
-import csv
-from playsound import playsound
-import face_recognition, os, glob, numpy as np
+import os
 
-#simple_facerec
+import csv
+import cv2
+import glob
+
+import numpy   as np
+import face_recognition
+
+from datetime  import datetime
+from playsound import playsound
+
+
 class SimpleFacerec:
     def __init__(self):
         self.known_face_encodings = []
@@ -73,7 +79,7 @@ class SimpleFacerec:
         return face_locations.astype(int), face_names
 
 
-def main():
+def main_facerec():
     
     # Load from camera & encode faces from directory
     cap = cv2.VideoCapture(0)
@@ -133,23 +139,20 @@ def main():
             # cv2.imwrite('/home/img'+str(i)+'.jpg',frame)
             # i+=1
             
-        #region freeze, wait, break
-        
+        #region freeze, wait, break 
         #freeze for some time
         #time.sleep(1)
         
         cv2.imshow("Background", frame)
         key = cv2.waitKey(1)
         if key == 27:
-            break
-        
+            break 
         #endregion freeze, wait, break
         
     cap.release()
     cv2.destroyAllWindows()
-    
-if __name__ == "__main__":
-    main()
+
+#main_facerec()
 
 
 
