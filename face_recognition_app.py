@@ -3,6 +3,7 @@ import tkinter  as tk
 import tkmacosx as tkmac
 
 from PIL import Image, ImageTk
+from face_recognition_main import facerec_main
 
 window_name = "Face Attendance"
 video_width, video_height = 720, 420
@@ -57,7 +58,6 @@ class MainWindow():
     
     self.label_initvideo = tk.Label(self.canvas, text= "Press start to load camera.",bg=bg_clr[1], fg=ft_clr[1], font=('PT Pro',15))
     self.label_initvideo.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-    #self.update_image()
 
     #endregion video frame display
     
@@ -75,11 +75,11 @@ class MainWindow():
   def toggled(self):
     
     self.no_clicks = self.no_clicks+1
-    print(self.no_clicks)
     
     if self.no_clicks == 1: 
       self.update_image()
       self.btn_start.configure(text="Stop")
+    
     else:
       
       self.window.after_cancel(self.after_id)
@@ -100,6 +100,8 @@ class MainWindow():
     
     self.image = cv2.cvtColor(self.cap.read()[1], cv2.COLOR_BGR2RGB)
     self.image = cv2.resize(self.image, (self.video_width,self.video_height))
+    
+    self.image = facerec_main(self.image)
     self.image = Image.fromarray(self.image) # to PIL format
     self.image = ImageTk.PhotoImage(self.image) # to ImageTk format
     
