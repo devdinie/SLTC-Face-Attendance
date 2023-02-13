@@ -10,53 +10,6 @@ video_width, video_height = 720, 420
 bg_clr = ["white"  ,"Gray", "#80cbed","#4db6e6","grey22"]
 ft_clr = ["#191970","White"]
 
-"""
-gui = GUI("Face Attendance")   
-gui.gui_run()
-"""
-"""
-class MainWindow():
-  
-  def __init__(self, window, window_name, cap):
-    
-    self.window = window
-    self.window.title(window_name)
-    
-    self.window_width  = self.window.winfo_screenwidth()
-    self.window_height = self.window.winfo_screenheight()
-    self.window.geometry("%dx%d" % (self.window_width, self.window_height))
-    
-    self.cap = cap
-    print(cap.get(cv2.CAP_PROP_FRAME_WIDTH),cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    #cap.set(cv2.CAP_PROP_FRAME_WIDTH ,frame_width)
-    #cap.set(cv2.CAP_PROP_FRAME_HEIGHT,frame_height)
-    
-    self.interval = 20 
-    
-    self.frame2b = tk.Frame(self.window, height=1000,width=700,bg=bg_clr[1])
-    self.frame2b.pack()
-    #self.label2b = tk.Label(self.frame2b, text= "Press start to load camera.",bg=bg_clr[1], fg=ft_clr[1], font=('PT Pro',15))
-    
-    self.canvas = tk.Canvas(self.frame2b,height=1000,width=700)
-    self.canvas.grid(row=0, column=0)
-    self.update_image()
-        
-  def update_image(self):
-
-    self.image = cv2.cvtColor(self.cap.read()[1], cv2.COLOR_BGR2RGB) # to RGB
-    self.image = Image.fromarray(self.image) # to PIL format
-    self.image = ImageTk.PhotoImage(self.image) # to ImageTk format
-    
-    self.canvas.create_image(0, 0, anchor=tk.CENTER, image=self.image)
-    self.window.after(self.interval, self.update_image)
-        
-if __name__ == "__main__":
-  
-  window = tk.Tk()
-  MainWindow(window, window_name, cv2.VideoCapture(0))
-  window.mainloop()
-""" 
-
 class MainWindow():
   
   def __init__(self, window, window_name, cap):
@@ -76,6 +29,7 @@ class MainWindow():
     self.window.geometry("%dx%d" % (self.window_width, self.window_height))
     
     self.interval = 20 
+    self.no_clicks= 0
     
     logo_org = Image.open("images_logos/SLTC_LOGO_2022.png")
     logo_img = ImageTk.PhotoImage(logo_org.resize((int(logo_org.width*0.12),int(logo_org.height*0.12))))
@@ -113,13 +67,31 @@ class MainWindow():
     btns_y = self.video_height+(self.window_height/2 - self.video_height/2) -60
 
     self.btn_start = tkmac.Button(text = 'Start', fg=ft_clr[1], bg=bg_clr[1], focuscolor=bg_clr[1], font=('PT Pro',15), 
-                                  activebackground=bg_clr[1], borderless=1, command=lambda:self.update_image())
+                                  activebackground=bg_clr[1], borderless=1, command=lambda:self.toggled()) #command=lambda:self.update_image()
     self.btn_start.place(x=left_x, y=btns_y, width = 100, height = 35)
     
-    self.btn_stop = tkmac.Button(text = 'Stop', fg=ft_clr[1], bg=bg_clr[1], focuscolor=bg_clr[1], font=('PT Pro',15), 
-                                  activebackground=bg_clr[1], borderless=1)
-    self.btn_stop.place(x=left_x+110, y=btns_y, width = 100, height = 35)
     #endregion buttons
+    
+  def toggled(self):
+    
+    self.no_clicks = self.no_clicks+1
+    print(self.no_clicks)
+    
+    if self.no_clicks == 1: 
+      self.update_image()
+      self.btn_start.configure(text="Stop")
+    else:
+      
+      self.window.after_cancel(self.after_id)
+      
+      self.no_clicks = 0
+      self.btn_start.configure(text="Start")
+      
+      self.canvas = tk.Canvas(self.window, width=self.video_width, height=self.video_height, bd=0, highlightthickness=0, bg=bg_clr[1], background=bg_clr[1])
+      self.canvas.place(relx=0.5, rely=0.5,anchor=tk.CENTER)
+    
+      self.label_initvideo = tk.Label(self.canvas, text= "Press start to load camera.",bg=bg_clr[1], fg=ft_clr[1], font=('PT Pro',15))
+      self.label_initvideo.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
     
     
   def update_image(self):
@@ -133,7 +105,8 @@ class MainWindow():
     
     self.canvas.create_image(0, 0, anchor=tk.NW, image=self.image)
     
-    self.window.after(self.interval, self.update_image)
+    self.after_id = self.window.after(self.interval, self.update_image)
+    
         
 if __name__ == "__main__":
   
