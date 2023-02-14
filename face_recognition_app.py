@@ -1,15 +1,24 @@
 import cv2
+import time
+import datetime
+import calendar
+
 import tkinter  as tk
 import tkmacosx as tkmac
 
+
+
+from tkinter import *
+from tkinter.ttk import *
 from PIL import Image, ImageTk
 from face_recognition_main import facerec_main
 
 window_name = "Face Attendance"
 video_width, video_height = 720, 420
 
-bg_clr = ["white"  ,"Gray", "#80cbed","#4db6e6","grey22"]
-ft_clr = ["#191970","White"]
+ft_clr  = ["#191970","White"]
+bg_clr  = ["white"  ,"Gray", "#80cbed","#4db6e6","grey22"]
+days_arr= ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 class MainWindow():
   
@@ -72,6 +81,52 @@ class MainWindow():
     
     #endregion buttons
     
+    #region clock display
+    
+    self.clk_canvas = tk.Canvas(self.window, width=310, height=90, bd=0, highlightthickness=2, highlightbackground=bg_clr[1], background=bg_clr[4])
+    self.clk_canvas.place(x = self.window_width-left_x/2, y = (self.window_height/2 - self.video_height/2)-23, anchor=tk.CENTER)
+    
+    self.clk_label = tk.Label(self.clk_canvas, text="", font=("ds-digital", 80), bg =bg_clr[4], fg="limegreen")
+    self.clk_label.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    
+    def digitalclock():
+      time_display = time.strftime("%H:%M:%S")
+      self.clk_label.config(text=time_display,font=("ds-digital", 80))
+      self.clk_label.after(200, digitalclock)
+    digitalclock()
+
+    #endregion clock display
+    
+    #region date display
+    
+    self.dte_canvas = tk.Canvas(self.window, width=310, height=50, bd=0, highlightthickness=2, highlightbackground=bg_clr[1], background=bg_clr[4])
+    self.dte_canvas.place(x = self.window_width-left_x/2, y = (self.window_height/2 - self.video_height/2)+70, anchor=tk.CENTER)
+    
+    dte_dflt_arr= str(datetime.datetime.today()).split(' ')[0].split('-')
+    dte_dflt_arr= [int(i) for i in dte_dflt_arr]
+    
+    dte_display =  days_arr[datetime.datetime.today().weekday()]+", "+calendar.month_name[dte_dflt_arr[1]] + " " + str(dte_dflt_arr[2])+", "+ str(dte_dflt_arr[0]) 
+    self.dte_label = tk.Label(self.dte_canvas, text=dte_display, font=("ds-digital", 27), bg =bg_clr[4], fg="limegreen")
+    self.dte_label.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    
+    #endregion date display
+    
+    
+    """
+    #region mode selection
+    
+    self.mode_canvas = tk.Canvas(self.window, width=310, height=90, bd=0, highlightthickness=2, highlightbackground=bg_clr[1], background=bg_clr[4])
+    self.mode_canvas.place(x = left_x/2, y = (self.window_height/2 - self.video_height/2)-23, anchor=tk.CENTER)
+    
+    RadioVar = IntVar()
+    f = tkFont.Font(family='Helvetica',size=36, weight='bold')
+    self.Radbtn1 = Radiobutton(self.mode_canvas, text="Option 1", variable=RadioVar, value=1)
+    self.Radbtn1.place( relx=0.5, rely=0.25, anchor = tk.CENTER ) #command=sel
+    
+    self.Radbtn2 = Radiobutton(self.mode_canvas, text="Option 2", variable=RadioVar, value=2)
+    self.Radbtn2.place( relx=0.5, rely=0.75, anchor = tk.CENTER )
+    #endregion mode selection
+    """
   def toggled(self):
     
     self.no_clicks = self.no_clicks+1
