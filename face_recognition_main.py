@@ -10,7 +10,9 @@ import face_recognition
 from datetime  import datetime
 from playsound import playsound
 
-face_names = [] 
+face_names = []
+global previous_name
+previous_name = ""
 
 class SimpleFacerec:
     def __init__(self):
@@ -80,10 +82,24 @@ def facerec_main(frame):
     sfr.load_encoding_images("images2/")
     
     def addData (name):
+        global previous_name
         with open('attendance.csv', 'a+', newline='') as f:
-            w = csv.writer(f)
-            w.writerow([name, datetime.now()])
-        f.close()
+
+            if len(previous_name) == 0:
+                w = csv.writer(f)
+                w.writerow([name, datetime.now()])
+                f.close()
+                previous_name = name
+            
+            elif previous_name != name:
+                w = csv.writer(f)
+                w.writerow([name, datetime.now()])
+                f.close()
+                previous_name = name
+
+            elif previous_name == name:
+                f.close()
+            
 
     face_locations, face_names = sfr.detect_known_faces(frame)
     
