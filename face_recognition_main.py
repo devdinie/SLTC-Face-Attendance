@@ -119,10 +119,7 @@ def facerec_main(frame):
             #region face detect for known input
             
             #need to update
-            #if face_names[len(face_names)] == name:
             time_lastseen = str(datetime.now()).split(' ')[0] + "@" + str(datetime.now()).split(' ')[1].split('.')[0]
-                
-            print(name, datetime.now())
             addData(name)
             
             #cv2.putText(frame, name+str(datetime.now()),(x1, y1 - 10), cv2.FONT_HERSHEY_DUPLEX, 1, (0,255,0), 2)
